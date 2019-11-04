@@ -1,11 +1,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const webpack = require('webpack')
 
 module.exports = {
-  mode: 'development',
-  devtool: 'source-map',
   entry: {
     main: './src/index.js'
   },
@@ -48,34 +45,36 @@ module.exports = {
     },{ 
       test: /\.js$/, 
       exclude: /node_modules/, 
-      loader: 'babel-loader',
-      options: {
-        presets: [['@babel/preset-env',{
-          useBuiltIns: 'usage',
-          targets: {
-            edge: "17",
-            firefox: "60",
-            chrome: "67",
-            safari: "11.1",
-          },
-          'corejs': 3
-        }]]
-      }
+      loader: 'babel-loader'
     }]
-  },
-  output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }), 
-    new CleanWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new CleanWebpackPlugin()
   ],
   devServer: {
     contentBase: './dist',
     hot: true
+  },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, '../dist')
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "async",
+      minSize: 30000,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: false,
+        default: false
+      }
+    }
   }
 }
